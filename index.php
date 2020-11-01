@@ -188,111 +188,31 @@ if(!$student)
 }
 
 ?>
-
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
 <?
 echo "<title>".$student->getName()." - Tutorings Report</title>";
 ?>
-<style>
 
-.introCaption
-{
-  width: 100%;
-  text-align: center;
-  font-size: 175%;
-  background-color: #F0F0F0;
-  font-family: 'Helvetica', 'Arial';
-  font-weight: bold;
-  margin-bottom: 20px;
-  padding: 5px;
-}
-
-.separatorCaption
-{
-  width: 100%;
-  text-align: left;
-  font-size: 110%;
-  background-color: #F0F0F0;
-  font-family: 'Helvetica', 'Arial';
-  font-weight: italic;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  padding: 5px;
-}
-
-.caption, .data
-{
-  font-size: 125%;
-  font-family: 'Helvetica', 'Arial';
-}
-
-.caption
-{
-  font-weight: bold;
-  float: left;
-  padding-right: 10px;
-}
-
-.data
-{
-  clear: right;
-  padding-bottom: 5px;
-}
-
-.divTable{
-	margin-top: 5px;
-	display: table;
-	width: 80%;
-	font-size: 120%;
-	font-family: 'Arial';
-}
-
-.divTableRow {
-	display: table-row;
-}
-
-.divTableHeadCell
-{
-	background-color: #79BCFF;
-	font-weight: bold;
-	border: 1px solid #999999;
-	padding: 3px 10px;
-	display: table-cell;
-}
-
-.divTableCellEven {
-	border: 1px solid #999999;
-	display: table-cell;
-	padding: 3px 10px;
-	border: 1px solid #C0C0C0;
-}
-
-.divTableCellOdd {
-	background-color: #F0F0F0;
-	border: 1px solid #C0C0C0;
-	display: table-cell;
-	padding: 3px 10px;
-	border: 1px solid #C0C0C0;
-}
-
-.divTableBody {
-	display: table-row-group;
-}
-
-</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
 
-<div class="introCaption"><?php echo $student->getName(); ?> - Tutorings Report</div>
-
+<h1><?php echo $student->getName(); ?> - Tutorings Report</h1>
+<h3><a data-toggle="collapse" href="#summary">Summary:</a></h3>
+<div id="summary" class="panel-collapse collapse in">
+<div class="infoBlock">
 <?
 $isDefaultCurrency = $student->getIdDefaultCurrency() == 1;
 $defaultCurrency = getCurrencyById($student->getIdDefaultCurrency());
 $currencyName = $defaultCurrency->getName();
 $unpaidTutorings = getAllUnpaidTutorings($student->getId());
-echo "<div class=\"caption\">Number Of Sessions: </div><div class=\"data\">".count($unpaidTutorings)."</div>";
+echo "<b>Number of sessions: </b>".count($unpaidTutorings)."<br />";
 $totalMinutes = 0;
 $totalPrice = 0;
 $totalPricePrimaryCurrency = 0;
@@ -326,35 +246,63 @@ foreach($unpaidTutorings as $tutoring)
 
 $totalPriceSuffix = $defaultCurrency->getId() != 1 ? " (" . priceToString($totalPricePrimaryCurrency) . ")" : "";
 
-echo "<div class=\"caption\">Total Time Spent: </div><div class=\"data\">".minutesToString($totalMinutes)."</div>";
-echo "<div class=\"caption\">Price Per Hour (Averaged): </div><div class=\"data\">$pricePerHourAveragedFormatted</div>";
+echo "<b>Total time spent: </b>".minutesToString($totalMinutes)."<br />";
+echo "<b>Price per hour (averaged): </b>$pricePerHourAveragedFormatted<br />";
+echo "<b>Total amount: </b>".priceToString($totalPrice, $currencyName).$totalPriceSuffix;
+echo "</div></div>";
 ?>
 
-<div class="separatorCaption">Payment details:</div>
-<div class="caption">IBAN Number: </div><div class="data">SK24 8360 5207 0042 0351 4042</div>
-<div class="caption">BIC (SWIFT) Code: </div><div class="data">BREXSKBX</div>
-<div class="caption">Beneficiary's Name: </div><div class="data">Michal Bubnár</div>
+<h3><a data-toggle="collapse" href="#paymentDetailsSepa">Payment details (SEPA bank transfer):</a></h3>
 <?
-echo "<div class=\"caption\">Total Amount: </div><div class=\"data\">" . priceToString($totalPrice, $currencyName) . $totalPriceSuffix . "</div>";
+$allClasses = "panel-collapse collapse";
+if(count($unpaidTutorings) > 0) {
+	$allClasses .= " in";
+}
+echo "<div id=\"paymentDetailsSepa\" class=\"$allClasses\">";
 ?>
-<div class="separatorCaption">Additional bank information (if required):</div>
-<div class="caption">Name of bank: </div><div class="data">mBank S.A., pobočka zahraničnej banky</div>
-<div class="caption">Address: </div><div class="data">Pribinova 10, 811 09 Bratislava</div>
+	<div class="infoBlock">
+		<b>IBAN number: </b>SK24 8360 5207 0042 0351 4042<br />
+		<b>BIC (SWIFT) code: </b>BREXSKBX<br />
+		<b>Beneficiary's name: </b>Michal Bubnár<br />
+		<?
+			echo "<b>Total amount: </b>".priceToString($totalPrice, $currencyName).$totalPriceSuffix."<br />";
+		?>
+		<h4><a data-toggle="collapse" href="#additionalBankData">Additional bank information (if required):</a></h4>
+		<div id="additionalBankData" class="panel-collapse collapse">
+			<b>Name of bank: </b>mBank S.A., pobočka zahraničnej banky<br />
+			<b>Bank address: </b>Pribinova 10, 811 09 Bratislava<br />
+		</div>
+	</div>
+</div>
+
+<h3><a data-toggle="collapse" href="#paymentDetailsPaypal">Payment details (PayPal):</a></h3>
+<div id="paymentDetailsPaypal" class="panel-collapse collapse">
+	<div class="infoBlock">
+		<b>E-mail: </b>michalbb1@gmail.com<br />
+		<?
+			echo "<b>Total amount: </b>".priceToString($totalPrice, $currencyName).$totalPriceSuffix."<br />";
+		?>
+	</div>
+</div>
+
 <?
+echo "<h3><a data-toggle=\"collapse\" href=\"#unpaidTutorings\">Unpaid tutorings:</a></h3>";
+echo "<div class=\"infoBlock\">";
+echo "<div id=\"unpaidTutorings\" class=\"panel-collapse collapse in\">";
 if(count($unpaidTutorings) == 0)
 {
-	echo "<div class=\"separatorCaption\">No unpaid tutorings found!</div>";
+	echo "All tutorings have been paid for!";
 }
 else
 {
-	echo "<div class=\"separatorCaption\">Following table shows data in detail:</div>";
-	echo "<div class=\"divTable\">";
-	echo "	<div class=\"divTableRow\">";
-	echo "		<div class=\"divTableHeadCell\">Date And Time</div>";
-	echo "		<div class=\"divTableHeadCell\">Duration</div>";
-	echo "		<div class=\"divTableHeadCell\">Price</div>";
-	echo "		<div class=\"divTableHeadCell\">Topic</div>";
-	echo "	</div>";
+	
+	echo "	<div class=\"divTable\">";
+	echo "		<div class=\"divTableRow\">";
+	echo "			<div class=\"divTableHeadCell\">Date And Time</div>";
+	echo "			<div class=\"divTableHeadCell\">Duration</div>";
+	echo "			<div class=\"divTableHeadCell\">Price</div>";
+	echo "			<div class=\"divTableHeadCell\">Topic</div>";
+	echo "		</div>";
 
 	$even = true;
 	foreach($unpaidTutorings as $tutoring)
@@ -398,6 +346,8 @@ else
 	}
 	echo "</div>";
 }
+echo "</div>";
+echo "</div>";
 ?>
 
 </body>
