@@ -1,6 +1,6 @@
 <?php
 
-include "deployment.php";
+include_once "deployment.php";
 
 function isDatabaseConnectionOpen()
 {
@@ -25,11 +25,13 @@ function openDatabaseConnection()
 	}
 }
 
-function getDbConnectionPDO() {
+function getDbConnectionPDO()
+{
     return $GLOBALS["dbConnection"];
 }
 
-function closeDatabaseConnection() {
+function closeDatabaseConnection()
+{
 	$GLOBALS["dbConnection"] = null;
 }
 
