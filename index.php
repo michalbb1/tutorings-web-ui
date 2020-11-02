@@ -1,11 +1,11 @@
 <?php
 
-include_once "database/database.php";
-include_once "database/currency.php";
-include_once "database/student.php";
-include_once "database/tutoring.php";
+include_once __DIR__."/database/database.php";
+include_once __DIR__."/database/currency.php";
+include_once __DIR__."/database/student.php";
+include_once __DIR__."/database/tutoring.php";
 
-include_once "string_utility.php";
+include_once __DIR__."/string_utility.php";
 
 openDatabaseConnection();
 $student = getStudent($_GET["personalGuid"]);

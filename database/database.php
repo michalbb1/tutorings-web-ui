@@ -1,6 +1,6 @@
 <?php
 
-include_once "deployment.php";
+include_once __DIR__."/deployment.php";
 
 function isDatabaseConnectionOpen()
 {
